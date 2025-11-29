@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3 class="mb-4">My Dashboard</h3>
+
+<!-- Table Header -->
+<div class="row fw-bold border-bottom py-2 mb-2">
+    <div class="col-3">Title</div>
+    <div class="col-1">Status</div>
+    <div class="col-3">Tags</div>
+    <div class="col-2">Author</div>
+    <div class="col-2">Created</div>
+    <div class="col-1 text-end">Actions</div>
+</div>
+
+<!-- Posts -->
+{% for post in page_obj %}
+<div class="row align-items-center border-bottom py-2">
+    <div class="col-3 text-truncate">{{ post.title }}</div>
+
+    <div class="col-1">
+        <span class="badge {% if post.status == 'Draft' %}bg-warning{% else %}bg-success{% endif %}">
+            {{ post.status }}
+        </span>
+    </div>
+
+    <div class="col-3 d-flex flex-wrap gap-1">
+        {% for tag in post.tags.all %}
+            <a href="{% url 'post_by_tag' slug=tag.slug %}" class="badge bg-secondary mb-1">{{ tag.name }}</a>
+        {% endfor %}
+    </div>
+
+    <div class="col-2 text-truncate">{{ post.author }}</div>
+    <div class="col-2">{{ post.created_at|date:"M d, Y" }}</div>
+
+    <div class="col-1 text-end d-flex justify-content-end gap-1">
+        <a href="{% url 'post_edit' pk=post.pk %}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{% url 'post_delete' pk=post.pk %}" class="btn btn-danger btn-sm">Delete</a>
+        
+        {% if post.status == 'Draft' %}
+        
+        {% else %}
+        <a href="{% url 'post_details' slug=post.slug %}" class="btn btn-primary btn-sm">View</a>
+        {% endif %}
+          
+        
+    </div>
+</div>
+{% empty %}
+<p>You have no posts.</p>
+{% endfor %}
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Prev</span></li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Next</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

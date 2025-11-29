@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h2>{{ post.title }}</h2>
+
+<p class="text-muted">
+    By {{ post.author }} | {{ post.created_at|date:"F d, Y" }}
+</p>
+
+{% if post.featured_img %}
+<img src="{{ post.featured_img.url }}" class="mb-3"
+     style="width: 400px; height: auto; border-radius: 10px; object-fit: cover;">
+{% endif %}
+
+
+<div>{{ post.content|safe }}</div>
+
+<hr>
+
+<!-- Like Button -->
+<form action="{% url 'like_post' post.id %}" method="POST">
+    {% csrf_token %}
+     <a href="{% url 'post_list' %}" class="btn btn-warning mx-2">Back</a>
+    <button class="btn btn-outline-primary">
+        ❤️ Like ({{ post.total_likes }})
+    </button>
+</form>
+
+<hr>
+
+<!-- Comments -->
+<h4>Comments ({{ comments.count }})</h4>
+
+{% for c in comments %}
+<div class="border p-3 mb-3">
+    <strong>{{ c.user }}:</strong> <br>
+    <div>{{ c.body|safe }}</div>
+    <small class="text-muted">{{ c.created_at }}</small>
+</div>
+{% empty %}
+<p>No comments yet.</p>
+{% endfor %}
+
+<hr>
+
+<!-- Add Comment -->
+{% if user.is_authenticated %}
+<h4>Add a Comment</h4>
+<form method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button class="btn btn-primary mt-2">Submit</button>
+</form>
+{% else %}
+<p>You must <a href="{% url 'login' %}">login</a> to comment.</p>
+{% endif %}
+
+{% endblock %}
