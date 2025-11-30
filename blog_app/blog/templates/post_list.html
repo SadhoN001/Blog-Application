@@ -16,11 +16,11 @@
     <div class="d-flex flex-wrap gap-2 mt-2">
         {% for tag in tags %}
         <a href="{% url 'post_list' %}?tag={{ tag.slug }}"
-           class="btn {% if tag.slug == tagQ %}btn-primary{% else %}btn-outline-secondary{% endif %} btn-sm">
+           class="btn {% if tag.slug == tag %}btn-primary{% else %}btn-outline-secondary{% endif %} btn-sm">
            {{ tag.name }}
         </a>
         {% endfor %}
-        {% if tagQ %}
+        {% if tag %}
         <a href="{% url 'post_list' %}" class="btn btn-danger btn-sm">Clear</a>
         {% endif %}
     </div>
